@@ -65,7 +65,7 @@ We will be using azure for most part of the project.
 
  2. Create Source and Sink Datasets.
     
- ![datasets](snips/covid19-adf_datasets.jpg)
+![datasets](snips/adf_raw_datasets.jpg)
 
  3. Create a pipeline, add copy data activity and configure source and sink data sets.
     
@@ -76,6 +76,32 @@ We will be using azure for most part of the project.
  5. Check and Validate the file in ADLS Cotainer.
     
 ![raw_container](snips/covid19-containers_raw.jpg)
+
+### Data Transformation
+
+- As we have all the required input files in our ADLS GEN2, we will now transform it to make more meaninfull.
+- as part of tranformation we will be using 3 services
+  1. Azure Datafactory(Dataflows)
+  2. Azure HD Insight
+  3. Azure Databricks
+     
+#### Azure Datafactory(Dataflows)
+
+##### Transforming Cases and Deaths
+
+- Any Dataflow will require two must have objects of Source and Sink tranformations.
+- Select raw cases and deaths file using source object.
+- Make sure to enable dataflow debug before you run the dataflows.
+- Filter only the Europe data using Filter object.
+- Select only the required fields and rename the columns to make it more meaningfull.
+- Convert Indicator and daily count to singe column using pivot
+- Add few more columns required using country source dataset and lookup object.
+- Select only the requried fields.
+- Push the final transformed data into Processed container of ADLS GEN2
+- Create a pipeline using the dataflow, create trigger and add to the pipeline, publish all the changes.
+ 
+![cases_deaths](snips/covid19-transform_cases_deaths_dataflow.jpg)
+
 
 
 ### Usefull Links for this Project
