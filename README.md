@@ -90,7 +90,7 @@ We will be using azure for most part of the project.
 ##### Transforming Cases and Deaths
 
 - Any Dataflow will require two must have objects of Source and Sink tranformations.
-- Select raw cases and deaths file using source object.
+- Fetch raw cases and deaths file using source object.
 - Make sure to enable dataflow debug before you run the dataflows.
 - Filter only the Europe data using Filter object.
 - Select only the required fields and rename the columns to make it more meaningfull.
@@ -99,9 +99,26 @@ We will be using azure for most part of the project.
 - Select only the requried fields.
 - Push the final transformed data into Processed container of ADLS GEN2
 - Create a pipeline using the dataflow, create trigger and add to the pipeline, publish all the changes.
+- Validate the data in ADLS GEN2 container
  
 ![cases_deaths](snips/covid19-transform_cases_deaths_dataflow.jpg)
 
+##### Transforming Hospital Admissions 
+
+- Fetch the raw hospital admissions data file using source object.
+- Select only required columns and rename if any.
+- Add county info through country looking using lookup object and remove columns which are not required using select.
+- Split the data into weekly and daily streams using conditional split object.
+- Create a new year week column through dim date file using derived data object.
+- Create Week start and end dates using Aggregate object.
+- Join the weekly object and aggregate object to have weekly data in one place.
+- Do a pivot on both daily and weekly flows using Indicator and value fields(just like we did in cases and deaths transformation)
+- Sort the data in country ascending and reported week descending for better view.
+- Push the final transformed data into Processed container of ADLS GEN2
+- Create a pipeline using the dataflow, create trigger and add to the pipeline, publish all the changes.
+- Validate the data in ADLS GEN2 container
+
+![dataflow2](snips/covid19-transform_hospital_admissions_dataflow.jpg)
 
 
 ### Usefull Links for this Project
