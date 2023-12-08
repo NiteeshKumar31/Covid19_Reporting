@@ -120,6 +120,41 @@ We will be using azure for most part of the project.
 
 ![dataflow2](snips/covid19-transform_hospital_admissions_dataflow.jpg)
 
+#### Transforming population file using Azure Databricks
+
+- Create a Azure databricks workspace and create a cluster.
+
+![databricks_cluster](snips/covid19-databricks_cluster.jpg)
+
+- Our data is in ADLS, in order to access it we need to mount the storage accounts. Below is the example code.
+- Create a service principle using Microsoft Infra ID and fetch client_id,tenant_id,client_secret from ADLS and store them inside Azure keyvalut.
+- Assign ```Storage Blob Contributor``` role to the service principle.
+- save the secrets in variables and make use of them while mounting.
+
+```
+storage_acct_key = dbutils.secrets.get(scope = 'covid19-reporting-scope', key= 'covidreporting31dl-acct-key')
+client_id = dbutils.secrets.get(scope = 'covid19-reporting-scope', key= 'covidreporting31dl-app-id')
+tenant_id = dbutils.secrets.get(scope = 'covid19-reporting-scope', key= 'covidreporting31dl-tenent-id')
+client_secret = dbutils.secrets.get(scope = 'covid19-reporting-scope', key= 'covidreporting31dl-client-secret')
+
+# COMMAND ----------
+
+configs = {"fs.azure.account.auth.type": "OAuth",
+           "fs.azure.account.oauth.provider.type": "org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider",
+           "fs.azure.account.oauth2.client.id": f"{client_id}",
+           "fs.azure.account.oauth2.client.secret": f"{client_secret}",
+           "fs.azure.account.oauth2.client.endpoint": f"https://login.microsoftonline.com/{tenant_id}/oauth2/token"}
+dbutils.fs.mount(
+  source = "abfss://raw@covidreporting31dl.dfs.core.windows.net/",
+  mount_point = "/mnt/covidreporting31dl/raw",
+  extra_configs = configs)
+```
+- I created mount point for RAW container above, likewise do it for processed and lookup containers.
+- Please refer to the ```transform_population_data.py ``` in my pyspark notebook folder for Transformation of data.
+- Create a pipeline and trigger it and validate the data in processed folder.
+
+![population_data_pipeline](snips/adf_population_databricks_transformation.jpg)
+
 
 ### Usefull Links for this Project
 
