@@ -1,9 +1,9 @@
 # Covid-19 Reporting
 
 ### Project Overview
-The project that we're developing now will be based around reporting and prediction of covid-19 spread. The project has mainly to objectives,
-- We will be creating a data platform for datascience team to make use of the final data to build machine learning models to predict the covid-19 spread and other insights of the data.
-- We will be creating a data platform where our data analyts can easily report on the covid-19 trends on a reporting tool.
+The project that we're developing now will be based around reporting and prediction of covid-19 spread. The project has mainly two objectives,
+1. We will be creating a data platform for datascience team to make use of the final data to build machine learning models to predict the covid-19 spread and other insights of the data.
+2. A data platform where our data analyts can easily report on the covid-19 trends using a reporting tool(PowerBI).
 
 ### Tools
 We will be using azure for most part of the project.
@@ -38,14 +38,14 @@ We will be using azure for most part of the project.
 ### Environment Setup
 
 - Create a Azure acccount using Azure portal.
-- Create a resource group to have all the required services at one place
-- Create and configure Storagee Account(Blob Storage and ADLS GEN2)
-- Create and configure Azure Datafactory
-- Create and configure Azure SQL Database
-- Create and configure Azure Databricks workspace
-- Create and configure Azure HD Insight
-- Create and configure Azure CI/CD
-- Download and configure Power BI using Azure SQL Database
+- Create a resource group to have all the required services at one place.
+- Create and configure Storagee Account(Blob Storage and ADLS GEN2).
+- Create and configure Azure Datafactory.
+- Create and configure Azure SQL Database.
+- Create and configure Azure Databricks workspace.
+- Create and configure Azure HD Insight.
+- Create and configure Azure CI/CD.
+- Download and configure Power BI using Azure SQL Database credentials.
 
 
 - We will be Dividing our project into 3 parts:
@@ -154,6 +154,36 @@ dbutils.fs.mount(
 - Create a pipeline and trigger it and validate the data in processed folder.
 
 ![population_data_pipeline](snips/adf_population_databricks_transformation.jpg)
+
+### Data Ingestion or Load
+
+#### Ingest Data into Azure SQL database for PowerBI reporting
+- As we perfomed all the required transformations, we're ready for reporting!!
+- We will load our processed data into Azure SQL database, we will make connection among SQL database and PowerBI.
+- Create tables required using ```files/create_covid_tables_ddl.sql``` scripts.
+- Create a pipeline and add processed cases and deaths file as source.
+- create sink dataset using Azure SQL database service principle.
+- Debug the pipeline and validate data in  Azure SQL database tables.
+- Create seperate pipeline for Hospital admissions and Testing files and validate the data in tables.
+  
+![cases_deaths](snips/adf_cases_deaths_sqldatabase_pipeline.jpg)
+
+![Hospital_admissions](snips/adf_hospital_admissions_sqldatabase_pipeline.jpg)
+
+![tesing](snips/adf_testing_sqldatabase_pipeline.jpg)
+
+
+### Making pipelines Production Ready
+- In real world projects, piplines will be made to run automatic using either schedules or through other depencies.
+- We will now create a dependency pipeline for population end-end processing.
+- This pipeline will trigger databricks transformation pipeline only when the ingestion pipeline gets completed successfully.
+
+![population_pipeline_dependencies](snips/adf_population_pipeline_dependencies.jpg)
+
+- We will create Tumbling window triggers for ECDC data transformation.
+- Create triggers for all the 5 pipelines and add dependencies across ingest and transform pipelines.
+
+![ECDC_tumbling_triggers](snips/covid19-adf-triggers.jpg)
 
 
 ### Usefull Links for this Project
