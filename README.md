@@ -184,6 +184,8 @@ dbutils.fs.mount(
 
 ![tesing](snips/adf_testing_sqldatabase_pipeline.jpg)
 
+### PowerBI
+
 - Install Power BI Desktop on your computer.
 - Connect to Azure Sql database by using server and database credentials.
 - Load all tables into PowerBI.
