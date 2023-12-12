@@ -155,7 +155,19 @@ dbutils.fs.mount(
 
 ![population_data_pipeline](snips/adf_population_databricks_transformation.jpg)
 
-### Data Ingestion or Load
+### Making pipelines Production Ready
+- In real world projects, piplines will be made to run automatic using either schedules or through other depencies.
+- We will now create a dependency pipeline for population end-end processing.
+- This pipeline will trigger databricks transformation pipeline only when the ingestion pipeline gets completed successfully.
+
+![population_pipeline_dependencies](snips/adf_population_pipeline_dependencies.jpg)
+
+- We will create Tumbling window triggers for ECDC data transformation.
+- Create triggers for all the 5 pipelines and add dependencies across ingest and transform pipelines.
+
+![ECDC_tumbling_triggers](snips/covid19-adf-triggers.jpg)
+
+### Data Ingestion for Reporting
 
 #### Ingest Data into Azure SQL database for PowerBI reporting
 - As we perfomed all the required transformations, we're ready for reporting!!
@@ -172,19 +184,11 @@ dbutils.fs.mount(
 
 ![tesing](snips/adf_testing_sqldatabase_pipeline.jpg)
 
-
-### Making pipelines Production Ready
-- In real world projects, piplines will be made to run automatic using either schedules or through other depencies.
-- We will now create a dependency pipeline for population end-end processing.
-- This pipeline will trigger databricks transformation pipeline only when the ingestion pipeline gets completed successfully.
-
-![population_pipeline_dependencies](snips/adf_population_pipeline_dependencies.jpg)
-
-- We will create Tumbling window triggers for ECDC data transformation.
-- Create triggers for all the 5 pipelines and add dependencies across ingest and transform pipelines.
-
-![ECDC_tumbling_triggers](snips/covid19-adf-triggers.jpg)
-
+- Install Power BI Desktop on your computer.
+- Connect to Azure Sql database by using server and database credentials.
+- Load all tables into PowerBI.
+- Create Datamodeling around the tables and apply transformation for better reporting.
+- Added the final power BI file in ```PowerBI/Covid-19+Trends+By+Country.pbix``` 
 
 ### Usefull Links for this Project
 
