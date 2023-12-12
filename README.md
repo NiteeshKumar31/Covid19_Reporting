@@ -1,12 +1,12 @@
 # Covid-19 Reporting
 
-### Project Overview
-The project that we're developing now will be based around reporting and prediction of covid-19 spread. The project has mainly two objectives,
-1. We will be creating a data platform for datascience team to make use of the final data to build machine learning models to predict the covid-19 spread and other insights of the data.
-2. A data platform where our data analyts can easily report on the covid-19 trends using a reporting tool(PowerBI).
+## Project Overview
+The project that we're developing now will be based around reporting and prediction of covid-19 spread, The project has mainly two objectives.
+1. We will be creating a data platform for datascience teams to make use of the final data to build machine learning models to predict the covid-19 spread and other insights of the data.
+2. A data platform where our data analysts can easily report on the covid-19 trends using a reporting tool(PowerBI).
 
-### Tools
-We will be using azure for most part of the project.
+## Tools
+We will be using azure and it's major services below for the project.
 - Azure Data Factory
 - Azure Databricks
 - Azure CI/CD
@@ -16,7 +16,7 @@ We will be using azure for most part of the project.
 - Power BI
 
 #### Objective1
-- Datalake will be built with the following data to aid data scientists to predict the covid-19 spread and other insights of the data. The data lake comprises of
+- Datalake will be built with the following data to aid data scientists to predict the covid-19 spread and other insights of the data. The data lake comprises of information across
   
   1. Confirmed cases
   2. Mortality
@@ -38,13 +38,13 @@ We will be using azure for most part of the project.
 ### Environment Setup
 
 - Create a Azure acccount using Azure portal.
-- Create a resource group to have all the required services at one place.
+- Create a resource group to have all services at one place.
 - Create and configure Storagee Account(Blob Storage and ADLS GEN2).
 - Create and configure Azure Datafactory.
 - Create and configure Azure SQL Database.
 - Create and configure Azure Databricks workspace.
 - Create and configure Azure HD Insight.
-- Create and configure Azure CI/CD.
+- Create and configure Azure Devops(CI/CD).
 - Download and configure Power BI using Azure SQL Database credentials.
 
 
@@ -54,12 +54,12 @@ We will be using azure for most part of the project.
   2. Data Transformation 
   3. Data Loading and Reporting
 
-### Data Ingestion
+## Data Ingestion
 
 ![Data_Ingestion](snips/Raw%20Population%20Copy%20Activity.jpg)
 
-- As part of data ingestion we will be making use of Azure Datafactory.
- 1. We will create a Linked service across ADF, ADLS and ADF, HTTP to fetch input files.
+- As part of data ingestion into datalakes we will be making use of Azure Datafactory.
+ 1. We will create a Linked services across ADF, ADLS and ADF, HTTP to fetch input files.
     
   ![Linked_Services](snips/covid19_linked_services.jpg)
 
@@ -77,7 +77,7 @@ We will be using azure for most part of the project.
     
 ![raw_container](snips/covid19-containers_raw.jpg)
 
-### Data Transformation
+## Data Transformation
 
 - As we have all the required input files in our ADLS GEN2, we will now transform it to make more meaninfull.
 - as part of tranformation we will be using 3 services
@@ -85,9 +85,9 @@ We will be using azure for most part of the project.
   2. Azure HD Insight
   3. Azure Databricks
      
-#### Azure Datafactory(Dataflows)
+### Azure Datafactory(Dataflows)
 
-##### Transforming Cases and Deaths
+#### Transforming Cases and Deaths
 
 - Any Dataflow will require two must have objects of Source and Sink tranformations.
 - Fetch raw cases and deaths file using source object.
@@ -103,16 +103,16 @@ We will be using azure for most part of the project.
  
 ![cases_deaths](snips/covid19-transform_cases_deaths_dataflow.jpg)
 
-##### Transforming Hospital Admissions 
+#### Transforming Hospital Admissions 
 
 - Fetch the raw hospital admissions data file using source object.
 - Select only required columns and rename if any.
-- Add county info through country looking using lookup object and remove columns which are not required using select.
+- Add country info through country lookup file using lookup object and remove columns which are not required using select.
 - Split the data into weekly and daily streams using conditional split object.
 - Create a new year week column through dim date file using derived data object.
 - Create Week start and end dates using Aggregate object.
 - Join the weekly object and aggregate object to have weekly data in one place.
-- Do a pivot on both daily and weekly flows using Indicator and value fields(just like we did in cases and deaths transformation)
+- Do a pivot on both daily and weekly flows using indicator and value fields(just like we did in cases and deaths transformation)
 - Sort the data in country ascending and reported week descending for better view.
 - Push the final transformed data into Processed container of ADLS GEN2
 - Create a pipeline using the dataflow, create trigger and add to the pipeline, publish all the changes.
@@ -126,10 +126,12 @@ We will be using azure for most part of the project.
 
 ![databricks_cluster](snips/covid19-databricks_cluster.jpg)
 
-- Our data is in ADLS, in order to access it we need to mount the storage accounts. Below is the example code.
-- Create a service principle using Microsoft Infra ID and fetch client_id,tenant_id,client_secret from ADLS and store them inside Azure keyvalut.
+- Our data is in ADLS, in order to access it we need to mount our storage accounts.
+- Create a service principle using Microsoft Infra ID and fetch client_id,tenant_id,client_secret from ADLS and store them inside Azure keyvalut for security purposes.
 - Assign ```Storage Blob Contributor``` role to the service principle.
 - save the secrets in variables and make use of them while mounting.
+
+##### Mounting Containers in Databricks 
 
 ```
 storage_acct_key = dbutils.secrets.get(scope = 'covid19-reporting-scope', key= 'covidreporting31dl-acct-key')
@@ -155,7 +157,7 @@ dbutils.fs.mount(
 
 ![population_data_pipeline](snips/adf_population_databricks_transformation.jpg)
 
-### Making pipelines Production Ready
+#### Making pipelines Production Ready
 - In real world projects, piplines will be made to run automatic using either schedules or through other depencies.
 - We will now create a dependency pipeline for population end-end processing.
 - This pipeline will trigger databricks transformation pipeline only when the ingestion pipeline gets completed successfully.
@@ -167,7 +169,7 @@ dbutils.fs.mount(
 
 ![ECDC_tumbling_triggers](snips/covid19-adf-triggers.jpg)
 
-### Data Ingestion for Reporting
+## Data Ingestion for Reporting
 
 #### Ingest Data into Azure SQL database for PowerBI reporting
 - As we perfomed all the required transformations, we're ready for reporting!!
@@ -192,7 +194,7 @@ dbutils.fs.mount(
 - Create Datamodeling around the tables and apply transformation for better reporting.
 - Added the final power BI file in ```PowerBI/Covid-19+Trends+By+Country.pbix``` 
 
-### Usefull Links for this Project
+#### Usefull Links for this Project
 
 - ECDC Website for Covid-19 Data - https://www.ecdc.europa.eu/en/covid-19/data
 - Euro Stat Website for Population Data - https://ec.europa.eu/eurostat/estat-navtree-portlet-prod/BulkDownloadListing?file=data/tps00010.tsv.gz
